@@ -1,18 +1,22 @@
 import { Router } from "express";
+import {
+  createNewTodo,
+  deleteTodoById,
+  getAllTodoS,
+  getTodoByid,
+  updateTodoById,
+} from "../controllers/todos.controller.js";
 
 const todoRouter = Router();
 
 // get all todos & create a new one
-todoRouter
-  .route("/")
-  .get((req, res) => res.send("all todos"))
-  .post((req, res) => res.send("new todo created"));
+todoRouter.route("/").get(getAllTodoS).post(createNewTodo);
 
 // get todo, update todo & delete todo with id
 todoRouter
   .route("/:id")
-  .get((req, res) => res.send("todo with id"))
-  .patch((req, res) => res.send("todo updated with id"))
-  .delete((req, res) => res.send("todo deleted with id"));
+  .get(getTodoByid)
+  .patch(updateTodoById)
+  .delete(deleteTodoById);
 
 export default todoRouter;
