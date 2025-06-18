@@ -1,13 +1,13 @@
 import express from "express";
 
+import todoRouter from "./routes/todo.routes.js";
+
 const PORT = 5500;
 const app = express();
 
-// Default route
-app.get("/", (req, res) => {
-  res.send("Welcome to ToDo API!");
-});
+// using routes
+app.use("/api/todos", todoRouter);
 
 app.listen(PORT, () => {
-  console.log(`Server is running on ${PORT} ->`);
+  console.log(`Server is running on PORT : ${PORT}`);
 });
