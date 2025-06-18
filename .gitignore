@@ -1,0 +1,84 @@
+# .gitignore for Monorepo (root level)
+
+### Global ignores ###
+.DS_Store
+*.log
+*.swp
+*.swo
+.idea/
+.vscode/
+.env
+.env.local
+*.env*
+!.env.example
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.pid
+*.seed
+*.pid.lock
+.vercel/
+.output/
+.cache/
+.turbo/
+
+### Dependency directories ###
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+build/
+**/build/
+.next/
+out/
+.serverless/
+.temp/
+.yarn/
+.pnp.*
+
+### Backend specific ###
+backend/.env
+backend/.env.*
+!backend/.env.example
+backend/coverage/
+backend/.nyc_output/
+backend/*.db
+backend/*.sqlite
+backend/*.sqlite3
+backend/prisma/migrations/
+!backend/prisma/migrations/.gitkeep
+backend/prisma/dev.db*
+backend/*.exe
+backend/*.dll
+backend/*.so
+backend/*.dylib
+
+### Frontend specific ###
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+frontend/.next/
+frontend/.svelte-kit/
+frontend/.astro/
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/out/
+frontend/.cache/
+frontend/*.css.map
+frontend/*.js.map
+frontend/public/static/
+frontend/public/assets/
+
+### Testing ###
+**/coverage/
+**/cypress/screenshots/
+**/cypress/videos/
+**/jest-test-results.json
+
+### Editors ###
+*.swp
+*~
+*.swo
+*.sublime-*
