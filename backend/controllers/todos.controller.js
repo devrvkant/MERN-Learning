@@ -45,7 +45,7 @@ export const updateTodoById = async(req, res) => {
         const id = req.params.id;
         const updating = req.body;
         if(!updating) res.status(400).json({error: "No valid updates are Provided."})
-        const updatedTodo = await findByIdAndUpdate(id,updating,{new:true});
+        const updatedTodo = await Todo.findByIdAndUpdate(id,updating,{new:true});
         if(!updatedTodo) res.status(404).json({error: "ToDo not Found."})
         res.status(200).json(updatedTodo);
     } catch(err){
