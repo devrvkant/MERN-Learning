@@ -1,8 +1,9 @@
 import React from 'react'
+import { Button } from './components/ui/button'
 
 const App = () => {
   return (
-    <div>App</div>
+    <div className='text-3xl'>App <Button variant={"ghost"} className="bg-primary text-2xl">Button</Button></div>
   )
 }
 
