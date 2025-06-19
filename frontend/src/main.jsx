@@ -1,10 +1,16 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import App from './App.jsx'
-import './app.css' // Tailwind CsS
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 
-createRoot(document.getElementById('root')).render(
+import { Provider } from "react-redux";
+
+import App from "./App.jsx";
+import "./app.css"; // Tailwind CsS
+import { store } from "./redux/store.js";
+
+createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <App />
-  </StrictMode>,
-)
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </StrictMode>
+);
