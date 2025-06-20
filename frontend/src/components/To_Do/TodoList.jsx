@@ -1,18 +1,14 @@
 import { Circle } from "lucide-react";
 
 import TodoItem from "./TodoItem";
-import { useGetTodosQuery } from "../../redux/rtkQuery/apiSlice";
 
-const TodoList = ({ onToggle, onView, onUpdate, onDelete }) => {
-  const {
-    data: todos,
-    isSuccess,
-    isError,
-    error,
-    isLoading,
-  } = useGetTodosQuery();
-
-  if (isLoading) return <div className="flex justify-center text-gray-600 text-sm md:text-base">loading...</div>;
+const TodoList = ({ todos, isSuccess, isError, error, isLoading }) => {
+  if (isLoading)
+    return (
+      <div className="flex justify-center text-gray-600 text-sm md:text-base">
+        loading...
+      </div>
+    );
   if (isSuccess)
     return (
       <div className="flex-1 min-h-0">
@@ -30,20 +26,16 @@ const TodoList = ({ onToggle, onView, onUpdate, onDelete }) => {
               </p>
             </div>
           ) : (
-            todos.map((todo) => (
-              <TodoItem
-                key={todo._id}
-                todo={todo}
-                onToggle={onToggle}
-                onView={onView}
-                onUpdate={onUpdate}
-                onDelete={onDelete}
-              />
-            ))
+            todos.map((todo) => <TodoItem key={todo._id} todo={todo} />)
           )}
         </div>
       </div>
     );
-  if (isError) return <div className="flex justify-center text-gray-600 text-sm md:text-base">{error}</div>;
+  if (isError)
+    return (
+      <div className="flex justify-center text-gray-600 text-sm md:text-base">
+        {error}
+      </div>
+    );
 };
 export default TodoList;

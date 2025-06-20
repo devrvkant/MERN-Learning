@@ -7,13 +7,22 @@ export const todosApi = createApi({
     baseUrl: "http://localhost:5500/api/todos", // sever base Url
   }),
   endpoints: (builder) => ({
+
     getTodos: builder.query({
       query: () => "/", // GET /api/todos
-      // Optional: Handle errors
+      // Transform Error response according to need and based on the server response
       transformErrorResponse: (response) => {
         return  response.data?.error;
       },
     }),
+    addTodo: builder.mutation({
+      query: (newTodo) =>({
+        url: '/', // POST /api/todos
+        method: 'POST',
+        body: newTodo
+      })
+    })
+    
   }),
 });
 

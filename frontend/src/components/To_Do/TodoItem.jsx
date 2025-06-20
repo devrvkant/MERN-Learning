@@ -3,7 +3,7 @@ import { Eye, Trash2, Check, Circle, Edit } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 
-const TodoItem = ({ todo, onToggle, onView, onUpdate, onDelete }) => {
+const TodoItem = ({ todo }) => {
   return (
     <Card className="group hover:shadow-md transition-all duration-200 border border-gray-200 hover:border-blue-300">
       <CardContent className="p-2 sm:p-3 md:p-4">
@@ -24,11 +24,11 @@ const TodoItem = ({ todo, onToggle, onView, onUpdate, onDelete }) => {
 
           {/* Todo Title with line clamp */}
           <div className="flex-1 min-w-0 flex items-center">
-            <p className={`text-sm sm:text-base line-clamp-2 ${
-              todo.completed 
-                ? 'text-gray-500 line-through' 
-                : 'text-gray-900'
-            }`}>
+            <p
+              className={`text-sm sm:text-base truncate ${
+                todo.completed ? "text-gray-500 line-through" : "text-gray-900"
+              }`}
+            >
               {todo.title}
             </p>
           </div>
