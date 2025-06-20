@@ -1,17 +1,35 @@
 import { useState } from "react";
 
 import { Plus } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
+import { useAddTodoMutation } from "../../redux/rtkQuery/apiSlice";
 
 const TodoHeader = () => {
-  const [newTodo,setNewTodo] = useState("")
-  
-  const handleAddTodo = async () =>{
-    
-  }
+  const [addNewTodo, { isLoading, isError, isSuccess, data, error }] =
+    useAddTodoMutation();
+  let [newTodo, setNewTodo] = useState("");
+
+  const handleAddTodo = async () => {
+    try {
+      newTodo = newTodo.trim();
+      await addNewTodo({
+        title: newTodo,
+      }).unwrap();
+
+      setNewTodo("");
+      // show the success message to user.
+      toast.success("Todo is Added.")
+    } catch (err) {
+      console.error(err.data.error);
+      // show to user the error message
+      toast.error(err.data.error);
+    }
+  };
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
@@ -32,19 +50,24 @@ const TodoHeader = () => {
               <Input
                 type="text"
                 placeholder="Add a new todo..."
+                disabled={isLoading}
                 value={newTodo}
                 onChange={(e) => setNewTodo(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && newTodo.trim() && handleAddTodo()}
+                onKeyPress={(e) => e.key === "Enter" && handleAddTodo()}
                 className="text-sm sm:text-base border-2 border-gray-200 focus:border-blue-500 transition-colors h-10 sm:h-11"
               />
             </div>
             <Button
               onClick={handleAddTodo}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 transition-colors shadow-md hover:shadow-lg w-full sm:w-auto h-10 sm:h-11 flex items-center justify-center"
-              disabled={!newTodo.trim()}
+              disabled={!newTodo.trim() || isLoading}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Add Todo
+              {isLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                "Add Todo"
+              )}
             </Button>
           </div>
         </CardContent>
@@ -52,4 +75,4 @@ const TodoHeader = () => {
     </div>
   );
 };
-export default TodoHeader
+export default TodoHeader;
