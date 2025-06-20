@@ -10,7 +10,7 @@ import { Card, CardContent } from "../ui/card";
 import { useAddTodoMutation } from "../../redux/rtkQuery/apiSlice";
 
 const TodoHeader = () => {
-  const [addNewTodo, { isLoading, isError, isSuccess, data, error }] =
+  const [addNewTodo, { isLoading, error }] =
     useAddTodoMutation();
   let [newTodo, setNewTodo] = useState("");
 
@@ -23,11 +23,11 @@ const TodoHeader = () => {
 
       setNewTodo("");
       // show the success message to user.
-      toast.success("Todo is Added.")
+      toast.success("Todo is Added.");
     } catch (err) {
-      console.error(err.data.error);
-      // show to user the error message
-      toast.error(err.data.error);
+      console.error(err);
+      // show the error message to user.
+      toast.error(err);
     }
   };
   return (

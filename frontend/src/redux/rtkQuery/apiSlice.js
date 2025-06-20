@@ -13,9 +13,9 @@ export const todosApi = createApi({
       query: () => "/", // GET /api/todos
       // Transform Error response according to need and based on the server response
       transformErrorResponse: (response) => {
-        return response.data?.error;
+        return response.data?.error || "Something went wrong!";
       },
-      providesTags: ["Todos"]
+      providesTags: ["Todos"],
     }),
     addTodo: builder.mutation({
       query: (newTodo) => ({
@@ -23,7 +23,10 @@ export const todosApi = createApi({
         method: "POST",
         body: newTodo,
       }),
-      invalidatesTags: ["Todos"]
+      transformErrorResponse: (response) => {
+        return response.data?.error || "Something went wrong!";
+      },
+      invalidatesTags: ["Todos"],
     }),
   }),
 });
