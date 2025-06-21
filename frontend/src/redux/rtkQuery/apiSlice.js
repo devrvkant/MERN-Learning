@@ -28,7 +28,17 @@ export const todosApi = createApi({
       },
       invalidatesTags: ["Todos"],
     }),
+    deleteTodo: builder.mutation({
+      query: (id) => ({
+        url: `/${id}`, // Delete /api/:id
+        method: "DELETE",
+      }),
+      transformErrorResponse: (response) => {
+        return response.data?.error || "Something went wrong!";
+      },
+      invalidatesTags: ["Todos"],
+    }),
   }),
 });
 
-export const { useGetTodosQuery, useAddTodoMutation } = todosApi;
+export const { useGetTodosQuery, useAddTodoMutation, useDeleteTodoMutation } = todosApi;

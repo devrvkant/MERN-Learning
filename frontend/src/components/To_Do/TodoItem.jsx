@@ -1,9 +1,23 @@
 import { Eye, Trash2, Check, Circle, Edit } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
+import { useDeleteTodoMutation } from "../../redux/rtkQuery/apiSlice";
 
 const TodoItem = ({ todo }) => {
+  const [deleteTodo, { isLoading: isDeleting }] = useDeleteTodoMutation();
+
+  const handleDeleteTodo = async (id) => {
+    try {
+      await deleteTodo(id).unwrap();
+
+      toast.success("Todo Deleted.");
+    } catch (err) {
+      console.error("catched error : ", err);
+      toast.error(err);
+    }
+  };
   return (
     <Card className="group hover:shadow-md transition-all duration-200 border border-gray-200 hover:border-blue-300">
       <CardContent className="p-2 sm:p-3 md:p-4">
@@ -29,7 +43,10 @@ const TodoItem = ({ todo }) => {
                 todo.completed ? "text-gray-500 line-through" : "text-gray-900"
               }`}
             >
-              {todo.title}
+              {/* {todo.title} */}
+              {isDeleting
+                ? `${todo.title} (Deleting this Todo...)`
+                : `${todo.title}`}
             </p>
           </div>
 
@@ -55,7 +72,7 @@ const TodoItem = ({ todo }) => {
               variant="ghost"
               size="sm"
               className="p-1.5 sm:p-2 hover:bg-red-100 hover:text-red-600 transition-colors"
-              onClick={() => onDelete(todo.id)}
+              onClick={() => handleDeleteTodo(todo._id)}
             >
               <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </Button>

@@ -10,7 +10,7 @@ import { Card, CardContent } from "../ui/card";
 import { useAddTodoMutation } from "../../redux/rtkQuery/apiSlice";
 
 const TodoHeader = () => {
-  const [addNewTodo, { isLoading, error }] =
+  const [addNewTodo, { isLoading }] =
     useAddTodoMutation();
   let [newTodo, setNewTodo] = useState("");
 
