@@ -11,6 +11,7 @@ import {
   useUpdateTodoTitleMutation,
 } from "../../redux/rtkQuery/apiSlice";
 import { UpdateTodoDialog } from "./UpdateTodoDialog";
+import { cn } from "../../lib/utils";
 
 const TodoItem = ({ todo }) => {
   const [open, setOpen] = useState(false);
@@ -49,7 +50,12 @@ const TodoItem = ({ todo }) => {
     }
   };
   return (
-    <Card className="group hover:shadow-md transition-all duration-200 border border-gray-200 hover:border-blue-300">
+    <Card
+      className={cn(
+        "group hover:shadow-md transition-all duration-200 border border-gray-200 hover:border-blue-300",
+        todo.isPending && "opacity-50 pointer-events-none animate-pulse"
+      )}
+    >
       <CardContent className="p-2 sm:p-3 md:p-4">
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Read/Mark Button */}

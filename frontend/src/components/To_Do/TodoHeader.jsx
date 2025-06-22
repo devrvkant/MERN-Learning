@@ -22,8 +22,6 @@ const TodoHeader = () => {
       }).unwrap();
 
       setNewTodo("");
-      // show the success message to user.
-      toast.success("Todo is Added.");
     } catch (err) {
       console.error(err);
       // show the error message to user.

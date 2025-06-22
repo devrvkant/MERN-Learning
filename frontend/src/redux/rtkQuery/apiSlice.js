@@ -34,7 +34,41 @@ export const todosApi = createApi({
       transformErrorResponse: (response) => {
         return response.data?.error || "Something went wrong!";
       },
-      invalidatesTags: [{ type: "Todos", id: "LIST" }], // Invalidate the whole Todo's list on add or delete operation
+      // Optimistic Update
+      onQueryStarted: async (newTodo, { dispatch, queryFulfilled }) => {
+        // create the tempId
+        const tempId = `temp-${Date.now()}`;
+        // Optimistically update the cache
+        const patchResult = dispatch(
+          todosApi.util.updateQueryData("getTodos", undefined, (draft) => {
+            draft.push({
+              _id: tempId, // Temporary Id & completed false manually because server not added this todo yet
+              ...newTodo,
+              completed: false,
+              isPending: true, // for differenciating and avoiding userActions on tempTodo
+            });
+          })
+        );
+        try {
+          // waiting for realTodo from server so we can merge optimistic state with real ServerState manually
+          const { data: realTodo } = await queryFulfilled;
+          // now replace it manually
+          dispatch(
+            todosApi.util.updateQueryData("getTodos", undefined, (draft) => {
+              const index = draft.findIndex((todo) => todo._id === tempId);
+              if (index !== -1) {
+                draft[index] = {
+                  ...realTodo,
+                  isPending: false, // after getting server response enable the user actions
+                };
+              } // replace with realTodo(serverState)
+            })
+          );
+        } catch {
+          // Revert optimistic update on error
+          patchResult.undo();
+        }
+      },
     }),
     deleteTodo: builder.mutation({
       query: (id) => ({
@@ -51,7 +85,7 @@ export const todosApi = createApi({
         url: `/${id}`, // Patch /api/:id
         method: "PATCH",
         body: { title: updatingTitle },
-    }),
+      }),
       transformErrorResponse: (response) => {
         return response.data?.error || "Something went wrong!";
       },
