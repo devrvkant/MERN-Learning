@@ -15,7 +15,15 @@ export const todosApi = createApi({
       transformErrorResponse: (response) => {
         return response.data?.error || "Something went wrong!";
       },
-      providesTags: ["Todos"],
+      providesTags: (result) =>
+        result
+          ? [
+              // Tag each individual Todo
+              ...result.map((todo) => ({ type: "Todos", id: todo._id })),
+              // Tag the entire list
+              { type: "Todos", id: "LIST" },
+            ]
+          : [{ type: "Todos", id: "LIST" }], // Tag the entire list even if api call fails
     }),
     addTodo: builder.mutation({
       query: (newTodo) => ({
@@ -26,7 +34,7 @@ export const todosApi = createApi({
       transformErrorResponse: (response) => {
         return response.data?.error || "Something went wrong!";
       },
-      invalidatesTags: ["Todos"],
+      invalidatesTags: [{ type: "Todos", id: "LIST" }], // Invalidate the whole Todo's list on add or delete operation
     }),
     deleteTodo: builder.mutation({
       query: (id) => ({
@@ -36,9 +44,25 @@ export const todosApi = createApi({
       transformErrorResponse: (response) => {
         return response.data?.error || "Something went wrong!";
       },
-      invalidatesTags: ["Todos"],
+      invalidatesTags: [{ type: "Todos", id: "LIST" }], // Invalidate the whole Todo's list on add or delete operation
+    }),
+    updateTodoTitle: builder.mutation({
+      query: ({ id, updatingTitle }) => ({
+        url: `/${id}`, // Patch /api/:id
+        method: "PATCH",
+        body: { title: updatingTitle },
+      }),
+      transformErrorResponse: (response) => {
+        return response.data?.error || "Something went wrong!";
+      },
+      invalidatesTags: (result, error, { id }) => [{ type: "Todos", id }], // Invalidate only a specific Todo on update
     }),
   }),
 });
 
-export const { useGetTodosQuery, useAddTodoMutation, useDeleteTodoMutation } = todosApi;
+export const {
+  useGetTodosQuery,
+  useAddTodoMutation,
+  useDeleteTodoMutation,
+  useUpdateTodoTitleMutation,
+} = todosApi;

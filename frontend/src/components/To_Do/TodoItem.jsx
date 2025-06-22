@@ -1,12 +1,20 @@
+import { useState } from "react";
+
 import { Eye, Trash2, Check, Circle, Edit } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
-import { useDeleteTodoMutation } from "../../redux/rtkQuery/apiSlice";
+import {
+  useDeleteTodoMutation,
+  useUpdateTodoTitleMutation,
+} from "../../redux/rtkQuery/apiSlice";
+import { UpdateTodoDialog } from "./UpdateTodoDialog";
 
 const TodoItem = ({ todo }) => {
+  const [open, setOpen] = useState(false);
   const [deleteTodo, { isLoading: isDeleting }] = useDeleteTodoMutation();
+  const [updateTodo, { isLoading: isUpdating }] = useUpdateTodoTitleMutation();
 
   const handleDeleteTodo = async (id) => {
     try {
@@ -14,7 +22,17 @@ const TodoItem = ({ todo }) => {
 
       toast.success("Todo Deleted.");
     } catch (err) {
-      console.error("catched error : ", err);
+      console.error(err);
+      toast.error(err);
+    }
+  };
+  const handleUpdateTodoTitle = async (title) => {
+    try {
+      await updateTodo({ updatingTitle: title, id: todo._id }).unwrap();
+
+      toast.success("Todo title updated.");
+    } catch (err) {
+      console.error(err);
       toast.error(err);
     }
   };
@@ -64,10 +82,18 @@ const TodoItem = ({ todo }) => {
               variant="ghost"
               size="sm"
               className="p-1.5 sm:p-2 hover:bg-yellow-100 hover:text-yellow-600 transition-colors"
-              onClick={() => onUpdate(todo.id)}
+              onClick={() => setOpen(true)}
             >
               <Edit className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </Button>
+            {/* updateTodoDialog */}
+            <UpdateTodoDialog
+              open={open}
+              onOpenChange={setOpen}
+              initialTitle={todo.title}
+              onUpdate={handleUpdateTodoTitle}
+              isUpdating={isUpdating}
+            />
             <Button
               variant="ghost"
               size="sm"
