@@ -16,7 +16,7 @@ export const createNewTodo = async (req, res) => {
 
 export const getAllTodoS = async (req, res) => {
   try {
-    const allTodos = await Todo.find();
+    const allTodos = await Todo.find().sort({createdAt: -1}); // newest first(for sorting todos in same order as they created)
     res.status(200).json(allTodos);
   } catch (err) {
     console.error(err.message);

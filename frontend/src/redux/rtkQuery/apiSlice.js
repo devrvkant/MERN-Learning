@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { toast } from "sonner";
 
 // Define the API slice
 export const todosApi = createApi({
@@ -16,15 +15,15 @@ export const todosApi = createApi({
       transformErrorResponse: (response) => {
         return response.data?.error || "Something went wrong!";
       },
-      providesTags: (result) =>
-        result
-          ? [
-              // Tag each individual Todo
-              ...result.map((todo) => ({ type: "Todos", id: todo._id })),
-              // Tag the entire list
-              { type: "Todos", id: "LIST" },
-            ]
-          : [{ type: "Todos", id: "LIST" }], // Tag the entire list even if api call fails
+      // providesTags: (result) =>
+      //   result
+      //     ? [
+      //         // Tag each individual Todo
+      //         ...result.map((todo) => ({ type: "Todos", id: todo._id })),
+      //         // Tag the entire list
+      //         { type: "Todos", id: "LIST" },
+      //       ]
+      //     : [{ type: "Todos", id: "LIST" }], // Tag the entire list even if api call fails - Now no need for providing tags because using Optimistic Updates here and manually updating the appropriate cache for that operation
     }),
     addTodo: builder.mutation({
       query: (newTodo) => ({
@@ -42,7 +41,8 @@ export const todosApi = createApi({
         // Optimistically update the cache
         const patchResult = dispatch(
           todosApi.util.updateQueryData("getTodos", undefined, (draft) => {
-            draft.push({
+            draft.unshift({
+              // shift at the last for pushing and unshift at the first(for showing newTodos at top)
               _id: tempId, // Temporary Id & completed false manually because server not added this todo yet
               ...newTodo,
               completed: false,
@@ -85,7 +85,8 @@ export const todosApi = createApi({
       onQueryStarted: async (id, { dispatch, queryFulfilled }) => {
         const patchResult = dispatch(
           todosApi.util.updateQueryData("getTodos", undefined, (draft) => {
-            return draft.filter((todo) => todo._id !== id);
+            const index = draft.findIndex((todo) => todo._id === id);
+            if (index !== -1) draft.splice(index, 1);
           })
         );
         try {
@@ -107,19 +108,22 @@ export const todosApi = createApi({
       // invalidatesTags: (result, error, { id }) => [{ type: "Todos", id }], // Invalidate only a specific Todo on update
       // no invalidatesTags needed when optimistically updating the cache manually(doint deleting and updating operations optimistically)
       // Optimistic Update
-      onQueryStarted: async({id,updatingTitle},{dispatch,queryFulfilled}) =>{
+      onQueryStarted: async (
+        { id, updatingTitle },
+        { dispatch, queryFulfilled }
+      ) => {
         const patchResult = dispatch(
-          todosApi.util.updateQueryData("getTodos",undefined,(draft) =>{
-            const todo = draft.find((t) => t._id === id)
-            if(todo) todo.title = updatingTitle;
+          todosApi.util.updateQueryData("getTodos", undefined, (draft) => {
+            const todo = draft.find((t) => t._id === id);
+            if (todo) todo.title = updatingTitle;
           })
-        )
-        try{
+        );
+        try {
           await queryFulfilled;
-        } catch{
-          patchResult.undo()
+        } catch {
+          patchResult.undo();
         }
-      }
+      },
     }),
     updateTodoStatus: builder.mutation({
       query: ({ id, updatingStatus }) => ({
@@ -133,7 +137,10 @@ export const todosApi = createApi({
       /* invalidatesTags: (result, error, { id }) => [{ type: "Todos", id }], */ // Invalidate only a specific Todo on update
       // no invalidatesTags needed when optimistically updating the cache manually(doint deleting and updating operations optimistically)
       // Optimistic Update
-      onQueryStarted: async ({id,updatingStatus}, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async (
+        { id, updatingStatus },
+        { dispatch, queryFulfilled }
+      ) => {
         const patchResult = dispatch(
           todosApi.util.updateQueryData("getTodos", undefined, (draft) => {
             const todo = draft.find((t) => t._id === id);

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Eye, Trash2, Check, Circle, Edit } from "lucide-react";
+import { Trash2, Check, Circle, Edit } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "../ui/button";
@@ -79,15 +79,7 @@ const TodoItem = ({ todo }) => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-0.5 sm:gap-1 opacity-0 group-hover:opacity-100 transition-opacity md:opacity-100 flex-shrink-0">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-1.5 sm:p-2 hover:bg-blue-100 hover:text-blue-600 transition-colors"
-              onClick={() => onView(todo.id)}
-            >
-              <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            </Button>
+          <div className="flex items-center gap-0.5 sm:gap-1  group-hover:opacity-100 transition-opacity  flex-shrink-0">
             <Button
               variant="ghost"
               size="sm"
@@ -102,7 +94,6 @@ const TodoItem = ({ todo }) => {
               onOpenChange={setOpen}
               initialTitle={todo.title}
               onUpdate={handleUpdateTodoTitle}
-              todoID={todo._id}
             />
             <Button
               variant="ghost"

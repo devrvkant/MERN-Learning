@@ -19,7 +19,6 @@ export function UpdateTodoDialog({
   onOpenChange,
   initialTitle,
   onUpdate,
-  todoId
 }) {
   const [title, setTitle] = useState(initialTitle);
 
