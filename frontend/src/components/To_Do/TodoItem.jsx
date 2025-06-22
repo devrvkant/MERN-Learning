@@ -15,16 +15,13 @@ import { cn } from "../../lib/utils";
 
 const TodoItem = ({ todo }) => {
   const [open, setOpen] = useState(false);
-  const [deleteTodo, { isLoading: isDeleting }] = useDeleteTodoMutation();
-  const [updateTodoTitle, { isLoading: isUpdating }] =
-    useUpdateTodoTitleMutation();
+  const [deleteTodo] = useDeleteTodoMutation();
+  const [updateTodoTitle] = useUpdateTodoTitleMutation();
   const [updateTodoStatus] = useUpdateTodoStatusMutation();
 
   const handleDeleteTodo = async (id) => {
     try {
       await deleteTodo(id).unwrap();
-
-      toast.success("Todo Deleted.");
     } catch (err) {
       console.error(err);
       toast.error(err);
@@ -33,8 +30,6 @@ const TodoItem = ({ todo }) => {
   const handleUpdateTodoTitle = async (title) => {
     try {
       await updateTodoTitle({ updatingTitle: title, id: todo._id }).unwrap();
-
-      toast.success("Todo title updated.");
     } catch (err) {
       console.error(err);
       toast.error(err);
@@ -79,10 +74,7 @@ const TodoItem = ({ todo }) => {
                 todo.completed ? "text-gray-500 line-through" : "text-gray-900"
               }`}
             >
-              {/* {todo.title} */}
-              {isDeleting
-                ? `${todo.title} (Deleting this Todo...)`
-                : `${todo.title}`}
+              {todo.title}
             </p>
           </div>
 
@@ -110,7 +102,7 @@ const TodoItem = ({ todo }) => {
               onOpenChange={setOpen}
               initialTitle={todo.title}
               onUpdate={handleUpdateTodoTitle}
-              isUpdating={isUpdating}
+              todoID={todo._id}
             />
             <Button
               variant="ghost"

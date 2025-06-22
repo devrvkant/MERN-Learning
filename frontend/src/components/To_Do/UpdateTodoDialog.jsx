@@ -19,23 +19,27 @@ export function UpdateTodoDialog({
   onOpenChange,
   initialTitle,
   onUpdate,
-  isUpdating,
+  todoId
 }) {
   const [title, setTitle] = useState(initialTitle);
-  const [mockUpdating, setMockUpdating] = useState(true)
 
   useEffect(() => {
     setTitle(initialTitle);
-  }, [initialTitle]);
+  }, [open]);
 
-  const handleUpdate = async () => {
+  const handleUpdate = () => {
     const formatedTitle = title.trim();
-    // prevent update if no changes in the title
-    if(formatedTitle===initialTitle.trim()){
-      toast.error("No changes detected, Skipping update!")
+    // prevent to setting empty Todo title
+    if (!formatedTitle) {
+      toast.error("Todo Title can't be empty, Skipping update!");
       return;
     }
-    await onUpdate(formatedTitle);
+    // prevent update if no changes in the title
+    if (formatedTitle === initialTitle.trim()) {
+      toast.error("No changes detected, Skipping update!");
+      return;
+    }
+    onUpdate(formatedTitle);
     onOpenChange(false);
   };
 
@@ -62,18 +66,12 @@ export function UpdateTodoDialog({
           >
             Cancel
           </Button>
-          {isUpdating ? (
-            <div className="inline-flex items-center justify-center rounded-md px-4 py-2 w-[84px] h-10 bg-emerald-100">
-              <Loader2 className="h-5 w-5 animate-spin text-emerald-700" />
-            </div>
-          ) : (
-            <Button
-              onClick={handleUpdate}
-              className={"bg-emerald-100 text-emerald-700 hover:bg-emerald-200"}
-            >
-              Save
-            </Button>
-          )}
+          <Button
+            onClick={handleUpdate}
+            className={"bg-emerald-100 text-emerald-700 hover:bg-emerald-200"}
+          >
+            Save
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

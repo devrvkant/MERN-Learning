@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { toast } from "sonner";
 
 // Define the API slice
 export const todosApi = createApi({
@@ -78,7 +79,21 @@ export const todosApi = createApi({
       transformErrorResponse: (response) => {
         return response.data?.error || "Something went wrong!";
       },
-      invalidatesTags: [{ type: "Todos", id: "LIST" }], // Invalidate the whole Todo's list on add or delete operation
+      /* invalidatesTags: [{ type: "Todos", id: "LIST" }], */ // Invalidate the whole Todo's list on add or delete operation
+      // no invalidatesTags needed when optimistically updating the cache manually(doint deleting and updating operations optimistically)
+      // Optimistic Update
+      onQueryStarted: async (id, { dispatch, queryFulfilled }) => {
+        const patchResult = dispatch(
+          todosApi.util.updateQueryData("getTodos", undefined, (draft) => {
+            return draft.filter((todo) => todo._id !== id);
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
     }),
     updateTodoTitle: builder.mutation({
       query: ({ id, updatingTitle }) => ({
@@ -89,7 +104,22 @@ export const todosApi = createApi({
       transformErrorResponse: (response) => {
         return response.data?.error || "Something went wrong!";
       },
-      invalidatesTags: (result, error, { id }) => [{ type: "Todos", id }], // Invalidate only a specific Todo on update
+      // invalidatesTags: (result, error, { id }) => [{ type: "Todos", id }], // Invalidate only a specific Todo on update
+      // no invalidatesTags needed when optimistically updating the cache manually(doint deleting and updating operations optimistically)
+      // Optimistic Update
+      onQueryStarted: async({id,updatingTitle},{dispatch,queryFulfilled}) =>{
+        const patchResult = dispatch(
+          todosApi.util.updateQueryData("getTodos",undefined,(draft) =>{
+            const todo = draft.find((t) => t._id === id)
+            if(todo) todo.title = updatingTitle;
+          })
+        )
+        try{
+          await queryFulfilled;
+        } catch{
+          patchResult.undo()
+        }
+      }
     }),
     updateTodoStatus: builder.mutation({
       query: ({ id, updatingStatus }) => ({
@@ -100,7 +130,22 @@ export const todosApi = createApi({
       transformErrorResponse: (response) => {
         return response.data?.error || "Something went wrong!";
       },
-      invalidatesTags: (result, error, { id }) => [{ type: "Todos", id }], // Invalidate only a specific Todo on update
+      /* invalidatesTags: (result, error, { id }) => [{ type: "Todos", id }], */ // Invalidate only a specific Todo on update
+      // no invalidatesTags needed when optimistically updating the cache manually(doint deleting and updating operations optimistically)
+      // Optimistic Update
+      onQueryStarted: async ({id,updatingStatus}, { dispatch, queryFulfilled }) => {
+        const patchResult = dispatch(
+          todosApi.util.updateQueryData("getTodos", undefined, (draft) => {
+            const todo = draft.find((t) => t._id === id);
+            if (todo) todo.completed = updatingStatus;
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
     }),
   }),
 });
