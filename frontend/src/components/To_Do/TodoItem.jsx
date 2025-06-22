@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import {
   useDeleteTodoMutation,
+  useUpdateTodoStatusMutation,
   useUpdateTodoTitleMutation,
 } from "../../redux/rtkQuery/apiSlice";
 import { UpdateTodoDialog } from "./UpdateTodoDialog";
@@ -14,7 +15,9 @@ import { UpdateTodoDialog } from "./UpdateTodoDialog";
 const TodoItem = ({ todo }) => {
   const [open, setOpen] = useState(false);
   const [deleteTodo, { isLoading: isDeleting }] = useDeleteTodoMutation();
-  const [updateTodo, { isLoading: isUpdating }] = useUpdateTodoTitleMutation();
+  const [updateTodoTitle, { isLoading: isUpdating }] =
+    useUpdateTodoTitleMutation();
+  const [updateTodoStatus] = useUpdateTodoStatusMutation();
 
   const handleDeleteTodo = async (id) => {
     try {
@@ -28,9 +31,18 @@ const TodoItem = ({ todo }) => {
   };
   const handleUpdateTodoTitle = async (title) => {
     try {
-      await updateTodo({ updatingTitle: title, id: todo._id }).unwrap();
+      await updateTodoTitle({ updatingTitle: title, id: todo._id }).unwrap();
 
       toast.success("Todo title updated.");
+    } catch (err) {
+      console.error(err);
+      toast.error(err);
+    }
+  };
+  const handleUpdateTodoStatus = async (id) => {
+    try {
+      const updatingStatus = !todo.completed;
+      await updateTodoStatus({ id, updatingStatus }).unwrap();
     } catch (err) {
       console.error(err);
       toast.error(err);
@@ -45,7 +57,7 @@ const TodoItem = ({ todo }) => {
             variant="ghost"
             size="sm"
             className="p-1.5 sm:p-2 hover:bg-green-100 hover:text-green-600 transition-colors flex-shrink-0"
-            onClick={() => onToggle(todo.id)}
+            onClick={() => handleUpdateTodoStatus(todo._id)}
           >
             {todo.completed ? (
               <Check className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />

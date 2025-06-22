@@ -51,6 +51,17 @@ export const todosApi = createApi({
         url: `/${id}`, // Patch /api/:id
         method: "PATCH",
         body: { title: updatingTitle },
+    }),
+      transformErrorResponse: (response) => {
+        return response.data?.error || "Something went wrong!";
+      },
+      invalidatesTags: (result, error, { id }) => [{ type: "Todos", id }], // Invalidate only a specific Todo on update
+    }),
+    updateTodoStatus: builder.mutation({
+      query: ({ id, updatingStatus }) => ({
+        url: `/${id}`, // Patch /api/:id
+        method: "PATCH",
+        body: { completed: updatingStatus },
       }),
       transformErrorResponse: (response) => {
         return response.data?.error || "Something went wrong!";
@@ -65,4 +76,5 @@ export const {
   useAddTodoMutation,
   useDeleteTodoMutation,
   useUpdateTodoTitleMutation,
+  useUpdateTodoStatusMutation,
 } = todosApi;
