@@ -2,28 +2,36 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
-    username: {
+    name: {
       type: String,
       required: true,
       unique: true,
       trim: true,
+      minlength: 3,
+      maxlength: 30,
     },
     email: {
       type: String,
       required: true,
       unique: true,
-      trim: true,
-      lowercase: true,
     },
     password: {
       type: String,
       required: true,
+      select: false,
     },
-    role: {
-      type: String,
-      enum: ["user", "admin"], // only allow 'user' and 'adming' roles
-      default: "user",
+    lastLogin: {
+      type: Date,
+      default: null,
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    resetPasswordToken: String,
+    resetPasswordTokenExpiresAt: Date,
+    verificationToken: String,
+    verificationTokenExpiresAt: Date,
   },
   { timestamps: true }
 );

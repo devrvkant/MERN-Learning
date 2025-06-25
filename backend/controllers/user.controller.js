@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 import User from "../models/user.model.js";
 
-export const registerUser = async (req, res) => {
+export const signUp = async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
 
@@ -45,7 +45,7 @@ export const registerUser = async (req, res) => {
   }
 };
 
-export const loginUser = async (req, res) => {
+export const logIn = async (req, res) => {
   try {
     const { username, password } = req.body;
     // find if provided username(user) exists in dB or not
@@ -84,6 +84,10 @@ export const loginUser = async (req, res) => {
     });
   }
 };
+
+export const logOut = async (req,res) =>{
+
+}
 
 export const getAllUsers = async (req, res) => {
   try {
