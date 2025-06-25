@@ -1,4 +1,6 @@
+import "dotenv/config";
 import bycrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 import User from "../models/user.model.js";
 
@@ -11,7 +13,7 @@ export const registerUser = async (req, res) => {
       $or: [{ email }, { username }],
     });
     if (existingUser)
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message:
           existingUser.email === email
@@ -43,19 +45,54 @@ export const registerUser = async (req, res) => {
   }
 };
 
+export const loginUser = async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    // find if provided username(user) exists in dB or not
+    const user = await User.findOne({ username });
+    if (!user)
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user credentials!",
+      });
+    // now check if password is correct or not
+    const isMatching = await bycrypt.compare(password, user.password);
+    if (!isMatching)
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user credentials!",
+      });
+    // now generate userToken(JWT-token)
+    const userToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+    return res.status(200).json({
+      success: true,
+      message: "Login successful.",
+      userToken,
+      user: {
+        id: user._id,
+        name: user.username,
+        email: user.email,
+      },
+    });
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error, Please try again later!",
+    });
+  }
+};
+
 export const getAllUsers = async (req, res) => {
   try {
     const allUsers = await User.find(); // newest first(for sorting todos in same order as they created)
-    res.status(200).json(allUsers);
+    return res.status(200).json(allUsers);
   } catch (err) {
     console.error(err.message);
     res
       .status(500)
       .json({ error: "Internal Server Error, Please try again later!" });
   }
-};
-
-export const loginUser = async (req, res) => {
-  try {
-  } catch (err) {}
 };
