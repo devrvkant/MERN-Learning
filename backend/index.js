@@ -14,6 +14,10 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.get("/",(req,re)=>{
+  res.send("welcome to authentication page")
+})
+
 // using routes
 app.use("/api/todos", todoRouter);
 app.use("/api/auth", userRouter);

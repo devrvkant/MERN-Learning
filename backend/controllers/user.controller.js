@@ -1,16 +1,17 @@
 import "dotenv/config";
-import bycrypt from "bcrypt";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 import User from "../models/user.model.js";
+import { generateVerificationToken, generateTokenAndSetCookie } from "../utils/authUtils.js";
 
 export const signUp = async (req, res) => {
   try {
-    const { username, email, password, role } = req.body;
+    const { name, email, password } = req.body;
 
     // check if user already exists
     const existingUser = await User.findOne({
-      $or: [{ email }, { username }],
+      $or: [{ email }, { name }],
     });
     if (existingUser)
       return res.status(400).json({
@@ -22,16 +23,24 @@ export const signUp = async (req, res) => {
       });
 
     // hash the user password
-    const salt = await bycrypt.genSalt(10);
-    const hashedPassword = await bycrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // create the user
-    const newelyCreatedUser = await User.create({
-      username,
+    // generate verificationToken
+    const verificationToken = generateVerificationToken();
+
+    // create the new user in dB
+    const user = await User.create({
+      name,
       email,
       password: hashedPassword,
-      role: role || "user",
+      verificationToken: verificationToken,
+      verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
     });
+    console.log("newelyCreatedUser : ", user);
+
+    // now generate userToken(JWT-token) and sendIt to client with a cookie to authenticate(login automatically) the client
+    generateTokenAndSetCookie(res, user._id);
+
     return res.status(201).json({
       success: true,
       message: "User registered successfully.",
@@ -56,13 +65,12 @@ export const logIn = async (req, res) => {
         message: "Invalid user credentials!",
       });
     // now check if password is correct or not
-    const isMatching = await bycrypt.compare(password, user.password);
+    const isMatching = await bcrypt.compare(password, user.password);
     if (!isMatching)
       return res.status(400).json({
         success: false,
         message: "Invalid user credentials!",
       });
-    // now generate userToken(JWT-token)
     const userToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
@@ -85,15 +93,14 @@ export const logIn = async (req, res) => {
   }
 };
 
-export const logOut = async (req,res) =>{
-
-}
+export const logOut = async (req, res) => {};
 
 export const getAllUsers = async (req, res) => {
   try {
-    const allUsers = await User.find(); // newest first(for sorting todos in same order as they created)
+    const allUsers = await User.find();
     return res.status(200).json(allUsers);
   } catch (err) {
+    console.log(err.message)
     console.error(err.message);
     res
       .status(500)
