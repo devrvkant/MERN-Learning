@@ -153,7 +153,13 @@ export const logIn = async (req, res) => {
   }
 };
 
-export const logOut = async (req, res) => {};
+export const logOut = async (req, res) => {
+  res.clearCookie("authToken");
+  res.status(200).json({
+    status: true,
+    message: "Logged out successfully."
+  })
+};
 
 export const getAllUsers = async (req, res) => {
   try {
