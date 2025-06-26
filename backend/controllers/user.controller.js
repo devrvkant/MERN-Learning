@@ -3,11 +3,19 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 import User from "../models/user.model.js";
-import { generateVerificationToken, generateTokenAndSetCookie } from "../utils/authUtils.js";
+import {
+  generateVerificationToken,
+  generateTokenAndSetCookie,
+} from "../utils/authUtils.js";
 
 export const signUp = async (req, res) => {
   try {
     const { name, email, password } = req.body;
+    
+    if(!name || !email || !password) return res.status(400).json({
+      success: false,
+      message: "Name,email and password all fields are required!"
+    })
 
     // check if user already exists
     const existingUser = await User.findOne({
@@ -36,7 +44,6 @@ export const signUp = async (req, res) => {
       verificationToken: verificationToken,
       verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
     });
-    console.log("newelyCreatedUser : ", user);
 
     // now generate userToken(JWT-token) and sendIt to client with a cookie to authenticate(login automatically) the client
     generateTokenAndSetCookie(res, user._id);
@@ -44,6 +51,10 @@ export const signUp = async (req, res) => {
     return res.status(201).json({
       success: true,
       message: "User registered successfully.",
+      user: {
+        ...user._doc,
+        password: undefined,
+      },
     });
   } catch (err) {
     console.error(err.message);
@@ -100,7 +111,7 @@ export const getAllUsers = async (req, res) => {
     const allUsers = await User.find();
     return res.status(200).json(allUsers);
   } catch (err) {
-    console.log(err.message)
+    console.log(err.message);
     console.error(err.message);
     res
       .status(500)

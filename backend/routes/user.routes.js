@@ -11,7 +11,7 @@ const userRouter = Router();
 userRouter.get("/users", getAllUsers);
 
 // signup(register) a new user
-userRouter.post("/signup", ()=> res.send("yes user is registered"));
+userRouter.post("/signup", signUp);
 
 // login an existing user
 userRouter.post("/login", logIn);

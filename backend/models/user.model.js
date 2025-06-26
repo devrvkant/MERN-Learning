@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      trim: true
+      trim: true,
     },
     password: {
       type: String,
@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema(
     },
     lastLogin: {
       type: Date,
-      default: null,
+      default: Date.now,
     },
     isVerified: {
       type: Boolean,
