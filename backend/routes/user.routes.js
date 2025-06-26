@@ -5,6 +5,7 @@ import {
   signUp,
   logIn,
   logOut,
+  verifyEmail
 } from "../controllers/user.controller.js";
 
 const userRouter = Router();
@@ -18,5 +19,8 @@ userRouter.post("/login", logIn);
 
 // logout an existing user
 userRouter.post("/logout", logOut);
+
+// for verifying emails during accounts creation
+userRouter.post("/verify-email", verifyEmail)
 
 export default userRouter;

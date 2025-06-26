@@ -7,7 +7,7 @@ import {
   generateVerificationToken,
   generateTokenAndSetCookie,
 } from "../utils/authUtils.js";
-import { sendVerificationEmail } from "../services/resendEmails/emails.js";
+import { sendVerificationEmail, sendWelcomeEmail } from "../services/resendEmails/emails.js";
 
 export const signUp = async (req, res) => {
   try {
@@ -67,6 +67,50 @@ export const signUp = async (req, res) => {
       success: false,
       message: "Internal Server Error, Please try again later!",
     });
+  }
+};
+
+export const verifyEmail = async (req, res) => {
+  try {
+    const { verificationOTP } = req.body;
+    if (!verificationOTP)
+      return res.status(400).json({
+        status: false,
+        message: "VerificationOTP is missing!",
+      });
+
+    // find the user with verificationOTP which stored as verificationToken in dB
+    const user = await User.findOne({
+      verificationToken: verificationOTP,
+      verificationTokenExpiresAt: { $gt: Date.now() }, // acts as a condition only return the user if verificationToken is not expired
+    });
+    
+    if(!user) return res.status(400).json({
+      status: false,
+      message: "Invalid or Expired verification code!"
+    })
+    
+    // now verify the user
+    user.isVerified = true
+    // and delete the verificationToken and its Expiring field, because they are not needed now
+    user.verificationToken = undefined
+    user.verificationTokenExpiresAt = undefined
+    // finally update these changes in dB
+    await user.save();
+    
+    // now send a welcomeEmail
+    await sendWelcomeEmail(user.email,user.name)
+    
+    res.status(200).json({
+      status: true,
+      message: "Email verified successfully, Welcome email is sent for verified email."
+    })
+  } catch (err) {
+    console.error(err.message)
+    res.status(500).json({
+      status: false,
+      message: "Internal Server Error, Please try again later!"
+    })
   }
 };
 

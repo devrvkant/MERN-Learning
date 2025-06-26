@@ -28,6 +28,275 @@ export const VERIFICATION_EMAIL_TEMPLATE = `
 </html>
 `;
 
+export const WELCOME_EMAIL_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to {{COMPANY_NAME}}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background-color: #f8fafc;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+        
+        .header-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .welcome-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .welcome-message {
+            font-size: 16px;
+            color: #4a5568;
+            margin-bottom: 30px;
+            text-align: center;
+            line-height: 1.8;
+        }
+        
+        .features {
+            background-color: #f7fafc;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .features-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .feature-list {
+            list-style: none;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #4a5568;
+        }
+        
+        .feature-icon {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .feature-icon::after {
+            content: "✓";
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .cta-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: transform 0.2s ease;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .footer {
+            background-color: #f7fafc;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .footer-text {
+            font-size: 14px;
+            color: #718096;
+            margin-bottom: 20px;
+        }
+        
+        .social-links {
+            margin-bottom: 20px;
+        }
+        
+        .social-link {
+            display: inline-block;
+            margin: 0 10px;
+            color: #a0aec0;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        
+        .unsubscribe {
+            margin-top: 20px;
+        }
+        
+        .unsubscribe-link {
+            color: #a0aec0;
+            text-decoration: none;
+            font-size: 12px;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+        
+        .unsubscribe-link:hover {
+            border-bottom-color: #a0aec0;
+        }
+        
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+            margin: 30px 0;
+        }
+        
+        @media (max-width: 640px) {
+            .email-container {
+                margin: 0;
+                border-radius: 0;
+            }
+            
+            .header, .content, .footer {
+                padding: 25px 20px;
+            }
+            
+            .welcome-title {
+                font-size: 20px;
+            }
+            
+            .cta-button {
+                padding: 12px 25px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">{{COMPANY_NAME}}</div>
+            <div class="header-subtitle">Welcome to the family!</div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="content">
+            <h1 class="welcome-title">🎉 Welcome aboard, {{USER_NAME}}!</h1>
+            
+            <p class="welcome-message">
+                Thank you for creating your account with {{COMPANY_NAME}}! We're thrilled to have you join our community. 
+                Your email has been successfully verified, and you're all set to explore everything we have to offer.
+            </p>
+            
+            <div class="features">
+                <h3 class="features-title">What's next?</h3>
+                <ul class="feature-list">
+                    <li class="feature-item">
+                        <div class="feature-icon"></div>
+                        <span>Explore and start using our powerful web application</span>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon"></div>
+                        <span>Need help? Reach out to us at <strong>{{SUPPORT_EMAIL}}</strong></span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="cta-section">
+                <a href="{{APP_URL}}" class="cta-button">Get Started Now</a>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <p class="welcome-message">
+                If you have any questions or need help getting started, don't hesitate to reach out to our support team. 
+                We're here to make your experience with {{COMPANY_NAME}} as smooth and enjoyable as possible.
+            </p>
+            
+            <p class="welcome-message">
+                <strong>Best regards,</strong><br>
+                The {{COMPANY_NAME}} Team
+            </p>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p class="footer-text">
+                You're receiving this email because you recently created an account with {{COMPANY_NAME}}.
+            </p>
+            
+            <div class="unsubscribe">
+                <a href="{{UNSUBSCRIBE_URL}}" class="unsubscribe-link">Unsubscribe from these emails</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+`;
+
 export const PASSWORD_RESET_SUCCESS_TEMPLATE = `
 <!DOCTYPE html>
 <html lang="en">
