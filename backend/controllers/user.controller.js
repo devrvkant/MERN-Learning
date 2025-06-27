@@ -7,7 +7,10 @@ import {
   generateVerificationToken,
   generateTokenAndSetCookie,
 } from "../utils/authUtils.js";
-import { sendVerificationEmail, sendWelcomeEmail } from "../services/resendEmails/emails.js";
+import {
+  sendVerificationEmail,
+  sendWelcomeEmail,
+} from "../services/resendEmails/emails.js";
 
 export const signUp = async (req, res) => {
   try {
@@ -84,41 +87,44 @@ export const verifyEmail = async (req, res) => {
       verificationToken: verificationOTP,
       verificationTokenExpiresAt: { $gt: Date.now() }, // acts as a condition only return the user if verificationToken is not expired
     });
-    
-    if(!user) return res.status(400).json({
-      status: false,
-      message: "Invalid or Expired verification code!"
-    })
-    
+
+    if (!user)
+      return res.status(400).json({
+        status: false,
+        message: "Invalid or Expired verification code!",
+      });
+
     // now verify the user
-    user.isVerified = true
+    user.isVerified = true;
     // and delete the verificationToken and its Expiring field, because they are not needed now
-    user.verificationToken = undefined
-    user.verificationTokenExpiresAt = undefined
+    user.verificationToken = undefined;
+    user.verificationTokenExpiresAt = undefined;
     // finally update these changes in dB
     await user.save();
-    
+
     // now send a welcomeEmail
-    await sendWelcomeEmail(user.email,user.name)
-    
+    await sendWelcomeEmail(user.email, user.name);
+
     res.status(200).json({
       status: true,
-      message: "Email verified successfully, Welcome email is sent for verified email."
-    })
+      message:
+        "Email verified successfully, Welcome email is sent for verified email.",
+    });
   } catch (err) {
-    console.error(err.message)
+    console.error(err.message);
     res.status(500).json({
       status: false,
-      message: "Internal Server Error, Please try again later!"
-    })
+      message: "Internal Server Error, Please try again later!",
+    });
   }
 };
 
 export const logIn = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
     // find if provided username(user) exists in dB or not
-    const user = await User.findOne({ username });
+    // we can login the user with email or password whatever we want because they both are unique in our schema
+    const user = await User.findOne({ email }).select("+password");
     if (!user)
       return res.status(400).json({
         success: false,
@@ -131,17 +137,20 @@ export const logIn = async (req, res) => {
         success: false,
         message: "Invalid user credentials!",
       });
-    const userToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    // otherWise the email and password both are correct for a user and now start the actual login process
+    // generate jwt-token and set cookie to logIn the user
+    generateTokenAndSetCookie(res, user._id);
+    // finally update the lastLogin to current dateTime for updating login history
+    user.lastLogin = new Date();
+    // finally update these changes in dB
+    await user.save();
+
     return res.status(200).json({
       success: true,
       message: "Login successful.",
-      userToken,
       user: {
-        id: user._id,
-        name: user.username,
-        email: user.email,
+        ...user._doc,
+        password: undefined,
       },
     });
   } catch (err) {
@@ -157,8 +166,8 @@ export const logOut = async (req, res) => {
   res.clearCookie("authToken");
   res.status(200).json({
     status: true,
-    message: "Logged out successfully."
-  })
+    message: "Logged out successfully.",
+  });
 };
 
 export const getAllUsers = async (req, res) => {
