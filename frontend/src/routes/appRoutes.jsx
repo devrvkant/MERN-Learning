@@ -4,6 +4,7 @@ import App from "../App";
 import Home from "../pages/Home";
 import SignUp from "../components/SignUp_Page/SignUpForm";
 import Login from "../pages/Login";
+import EmailVerification from "../pages/EmailVerification";
 
 const appRoutes = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const appRoutes = createBrowserRouter([
       {
         path: "login",
         element: <Login />
+      },
+      {
+        path: "verify-email",
+        element: <EmailVerification />
       }
     ]
   },
