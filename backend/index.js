@@ -1,7 +1,8 @@
 import express from "express";
 
-import cors from "cors";
 import "dotenv/config"
+import cors from "cors";
+import cookieParser from "cookie-parser";
 
 import connectToMongoDB from "./mongoDB.js";
 import todoRouter from "./routes/todos.routes.js";
@@ -11,8 +12,9 @@ const PORT = process.env.PORT || 5500;
 const app = express();
 
 // using middlewares
-app.use(express.json());
-app.use(cors());
+app.use(express.json()); // allow us to parse incoming requests :- req.body
+app.use(cors()); // prevent from CORS errors(allow cross origin access)
+app.use(cookieParser()); // allow us to parse incoming cookies
 
 // using routes
 app.use("/api/todos", todoRouter);

@@ -7,11 +7,17 @@ import {
   logOut,
   verifyEmail,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  checkAuth
 } from "../controllers/user.controller.js";
+import verifyAuthToken from "../middlewares/verifyAuthToken.js";
 
 const userRouter = Router();
 userRouter.get("/users", getAllUsers);
+
+// for checking that if user is authenticated or not & also works as protetcting our apiRoutes which requires authentication
+// verifyToken :- MiddleWare here
+userRouter.get("/check-auth", verifyAuthToken, checkAuth)
 
 // signup(register) a new user
 userRouter.post("/signup", signUp);

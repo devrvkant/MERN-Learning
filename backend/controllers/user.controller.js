@@ -248,12 +248,25 @@ export const resetPassword = async (req, res) => {
   }
 };
 
+export const checkAuth = async (req, res) => {
+  try{
+    // only return the user to represent that the user is authenticated(loggedIn)
+    const user = await User.findById(req.userId).select("-password");
+    res.status(200).json({ success: true, user });
+  } catch(err){
+    console.error(err.message)
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error, Please try again later!" 
+    })
+  }
+};
+
 export const getAllUsers = async (req, res) => {
   try {
     const allUsers = await User.find();
     return res.status(200).json(allUsers);
   } catch (err) {
-    console.log(err.message);
     console.error(err.message);
     res
       .status(500)
