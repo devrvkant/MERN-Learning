@@ -5,7 +5,9 @@ import {
   signUp,
   logIn,
   logOut,
-  verifyEmail
+  verifyEmail,
+  forgotPassword,
+  resetPassword
 } from "../controllers/user.controller.js";
 
 const userRouter = Router();
@@ -22,5 +24,11 @@ userRouter.post("/logout", logOut);
 
 // for verifying emails during accounts creation
 userRouter.post("/verify-email", verifyEmail)
+
+// for requesting the passwordReset and recieve the link through email :- forgotPassword
+userRouter.post("/forgot-password", forgotPassword)
+
+// for settingUp new password and get the success email :- resetPassword
+userRouter.patch("/reset-password/:token", resetPassword)
 
 export default userRouter;
