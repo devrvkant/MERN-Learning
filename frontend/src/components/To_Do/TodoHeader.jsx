@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
-import { useAddTodoMutation } from "../../redux/rtkQuery/apiSlice";
+import { useAddTodoMutation } from "../../redux/rtkQuery/todosApi";
 
 const TodoHeader = () => {
   const [addNewTodo, { isLoading }] =

@@ -9,7 +9,7 @@ import {
   useDeleteTodoMutation,
   useUpdateTodoStatusMutation,
   useUpdateTodoTitleMutation,
-} from "../../redux/rtkQuery/apiSlice";
+} from "../../redux/rtkQuery/todosApi";
 import { UpdateTodoDialog } from "./UpdateTodoDialog";
 import { cn } from "../../lib/utils";
 

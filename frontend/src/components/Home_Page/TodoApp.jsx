@@ -1,6 +1,6 @@
 import TodoHeader from "../To_Do/TodoHeader";
 import TodoList from "../To_Do/TodoList";
-import { useGetTodosQuery } from "../../redux/rtkQuery/apiSlice";
+import { useGetTodosQuery } from "../../redux/rtkQuery/todosApi";
 
 const TodoApp = () => {
   const {
