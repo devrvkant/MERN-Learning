@@ -1,6 +1,6 @@
 import express from "express";
 
-import "dotenv/config"
+import "dotenv/config";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
@@ -13,7 +13,12 @@ const app = express();
 
 // using middlewares
 app.use(express.json()); // allow us to parse incoming requests :- req.body
-app.use(cors()); // prevent from CORS errors(allow cross origin access)
+app.use(
+  cors({
+    origin: "http://localhost:5173", // specify the exact frontend origin
+    credentials: true, // allow credentials (cookies, authorization headers)
+  })
+); // prevent from CORS errors(allow cross origin access)
 app.use(cookieParser()); // allow us to parse incoming cookies
 
 // using routes

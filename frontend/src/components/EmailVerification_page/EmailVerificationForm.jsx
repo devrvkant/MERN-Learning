@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 import {
   Card,
@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/form";
 import { emailVerificationSchema } from "../../lib/validation-schemas";
 
-export default function EmailVerificationForm() {
+export default function EmailVerificationForm({handleVerifyEmail, isLoading}) {
   const form = useForm({
     resolver: zodResolver(emailVerificationSchema),
     defaultValues: {
@@ -33,20 +33,8 @@ export default function EmailVerificationForm() {
   const inputRefs = useRef([]);
 
   async function onSubmit(values) {
-    try {
-      const verificationCode = values.code.join("");
-      console.log("Verification code:", verificationCode);
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">
-            {JSON.stringify({ code: verificationCode }, null, 2)}
-          </code>
-        </pre>
-      );
-    } catch (error) {
-      console.error("Verification error", error);
-      toast.error("Failed to verify code. Please try again.");
-    }
+    const verificationCode = values.code.join("");
+    await handleVerifyEmail(verificationCode);
   }
 
   const handleInputChange = (index, value) => {
@@ -66,7 +54,7 @@ export default function EmailVerificationForm() {
 
   const handleKeyDown = (index, e) => {
     const currentCode = form.getValues("code");
-    
+
     // Handle backspace
     if (e.key === "Backspace" && !currentCode[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
@@ -157,10 +145,14 @@ export default function EmailVerificationForm() {
 
                   <Button
                     type="submit"
-                    disabled={!isCodeComplete}
+                    disabled={!isCodeComplete || isLoading}
                     className="w-full h-11 sm:h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] disabled:hover:scale-100 text-sm sm:text-base"
                   >
-                    Verify Email
+                    {isLoading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      "Verify Email"
+                    )}
                   </Button>
                 </div>
               </form>

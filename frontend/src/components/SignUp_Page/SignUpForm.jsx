@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 import {
   Form,
@@ -25,7 +26,7 @@ import { registerFormSchema } from "@/lib/validation-schemas";
 
 const formSchema = registerFormSchema;
 
-export default function SignUpForm() {
+export default function SignUpForm({ handleSignUp, isLoading }) {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -36,19 +37,9 @@ export default function SignUpForm() {
     },
   });
 
-  async function onSubmit(values) {
-    try {
-      // Assuming an async registration function
-      console.log(values);
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
-    } catch (error) {
-      console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
-    }
+  async function onSubmit({ name, email, password }) {
+    // Assuming an async registration function
+    await handleSignUp(name, email, password);
   }
 
   return (
@@ -172,9 +163,14 @@ export default function SignUpForm() {
 
                   <Button
                     type="submit"
+                    disabled={isLoading}
                     className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
                   >
-                    Sign Up
+                    {isLoading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      "Sign Up"
+                    )}
                   </Button>
                 </div>
               </form>

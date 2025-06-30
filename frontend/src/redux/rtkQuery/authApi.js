@@ -14,8 +14,21 @@ export const authApi = createApi({
         method: "POST",
         body: { name, email, password },
       }),
+      transformErrorResponse: (response) => {
+        return response.data?.message || "Something went wrong!";
+      },
+    }),
+    verifyEmail: builder.mutation({
+      query: (verificationOTP) => ({
+        url: "/verify-email",
+        method: "POST",
+        body: { verificationOTP },
+      }),
+      transformErrorResponse: (response) => {
+        return response.data?.message || "Something went wrong!";
+      },
     }),
   }),
 });
 
-export const { useSignUpMutation } = authApi;
+export const { useSignUpMutation, useVerifyEmailMutation } = authApi;
