@@ -1,6 +1,6 @@
 import "dotenv/config";
 import bcrypt from "bcrypt";
-import crypto from "crypto"
+import crypto from "crypto";
 
 import User from "../models/user.model.js";
 import {
@@ -11,7 +11,7 @@ import {
   sendPasswordResetEmail,
   sendVerificationEmail,
   sendWelcomeEmail,
-  sendSuccessEmailForPasswordReset
+  sendSuccessEmailForPasswordReset,
 } from "../services/resendEmails/emails.js";
 
 export const signUp = async (req, res) => {
@@ -165,100 +165,115 @@ export const logIn = async (req, res) => {
 };
 
 export const logOut = async (req, res) => {
-  res.clearCookie("authToken");
-  res.status(200).json({
-    status: true,
-    message: "Logged out successfully.",
-  });
+  try {
+    res.clearCookie("authToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "Production",
+      sameSite: "strict",
+    });
+
+    res.status(200).json({
+      status: true,
+      message: "Logged out successfully.",
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error, Please try again later!",
+    });
+  }
 };
 
 export const forgotPassword = async (req, res) => {
-  try{
-    const {email} = req.body;
-    
+  try {
+    const { email } = req.body;
+
     // check if user exists
-    const user = await User.findOne({email});
-    if(!user) return res.status(400).json({
-      status: false,
-      message: "User dosen't exist with this email, In our app!"
-    })
-    
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(400).json({
+        status: false,
+        message: "User dosen't exist with this email, In our app!",
+      });
+
     // now continoue the process
     // 1. generate password resetToken
-    const resetToken = crypto.randomBytes(20).toString("hex")
+    const resetToken = crypto.randomBytes(20).toString("hex");
     const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000; // In 1 hour after generating
     // 2. save them in dB
     user.resetPasswordToken = resetToken;
     user.resetPasswordTokenExpiresAt = resetTokenExpiresAt;
-    await user.save()
-    
+    await user.save();
+
     // now send the email with resetPassword link
     const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
-    await sendPasswordResetEmail(user.email,resetLink)
+    await sendPasswordResetEmail(user.email, resetLink);
 
     res.status(200).json({
       success: true,
-      message: "Password reset link sent to your email."
-    })
-  } catch(err){
+      message: "Password reset link sent to your email.",
+    });
+  } catch (err) {
     console.error(err.message);
     res.status(500).json({
       success: true,
-      message: "Internal Server Error, Please try again later!" 
-    })
+      message: "Internal Server Error, Please try again later!",
+    });
   }
 };
 
 export const resetPassword = async (req, res) => {
-  try{
-    const {token} = req.params;
-    const {password} = req.body;
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
 
     // find the user with token while also validating that token must not be expired
     const user = await User.findOne({
       resetPasswordToken: token,
-      resetPasswordTokenExpiresAt: { $gt: Date.now() }
-    }).select("+password")
-    if(!user) return res.status(400).json({
-      success: false,
-      message: "Invalid or expired reset link."
-    })
+      resetPasswordTokenExpiresAt: { $gt: Date.now() },
+    }).select("+password");
+    if (!user)
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired reset link.",
+      });
     // otherWise update the password
     // 1. hash the incoming new password from client
-    const hashedPassword = await bcrypt.hash(password,10)
+    const hashedPassword = await bcrypt.hash(password, 10);
     // 2. now update and save it in dB
-    user.password = hashedPassword
-    user.resetPasswordToken = undefined
-    user. resetPasswordTokenExpiresAt = undefined
-    await user.save()
-    
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordTokenExpiresAt = undefined;
+    await user.save();
+
     // send the successEmail for password reset
     await sendSuccessEmailForPasswordReset(user.email);
-    
+
     res.status(200).json({
       status: true,
-      message: "Password reset successful."
-    })
-  } catch(err){
-    console.error(err.message)
+      message: "Password reset successful.",
+    });
+  } catch (err) {
+    console.error(err.message);
     res.status(500).json({
       success: false,
-      message: "Internal Server Error, Please try again later!" 
-    })
+      message: "Internal Server Error, Please try again later!",
+    });
   }
 };
 
 export const checkAuth = async (req, res) => {
-  try{
+  try {
     // only return the user to represent that the user is authenticated(loggedIn)
     const user = await User.findById(req.userId).select("-password");
     res.status(200).json({ success: true, user });
-  } catch(err){
-    console.error(err.message)
+  } catch (err) {
+    console.error(err.message);
     res.status(500).json({
       success: false,
-      message: "Internal Server Error, Please try again later!" 
-    })
+      message: "Internal Server Error, Please try again later!",
+    });
   }
 };
 

@@ -34,9 +34,27 @@ export const authApi = createApi({
         try {
           const { data } = await queryFulfilled;
           const user = data.user;
-          console.log("user in the logIn mutation : ",user)
           dispatch(setUser(user));
         } catch (err) {
+          dispatch(clearUser());
+        }
+      },
+    }),
+    logOut: builder.mutation({
+      query: () => ({
+        url: "/logout", // POST /api/auth/logout
+        method: "POST",
+      }),
+      transformErrorResponse: (response) => {
+        return response.data?.message || "Something went wrong!";
+      },
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        try {
+          await queryFulfilled;
+          // Clear user data on successful logout
+          dispatch(clearUser());
+        } catch (err) {
+          // Even if server logout fails, clear local state for security
           dispatch(clearUser());
         }
       },
@@ -79,5 +97,10 @@ export const authApi = createApi({
   }),
 });
 
-export const { useSignUpMutation, useLogInMutation, useVerifyEmailMutation, useCheckAuthQuery } =
-  authApi;
+export const {
+  useSignUpMutation,
+  useLogInMutation,
+  useVerifyEmailMutation,
+  useCheckAuthQuery,
+  useLogOutMutation,
+} = authApi;
