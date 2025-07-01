@@ -17,7 +17,7 @@ const SignUp = () => {
         password,
       }).unwrap();
       // then navigate to verify-email page
-      navigate("/verify-email");
+      navigate("/verify-email", {replace: true});
       // also send the success message to the user
       toast.success("Account created successfully, verification code sent to your provided email to verify your account.");
     } catch (err) {

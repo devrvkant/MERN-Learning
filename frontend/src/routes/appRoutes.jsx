@@ -6,6 +6,7 @@ import SignUp from "../pages/SignUp";
 import Login from "../pages/Login";
 import EmailVerification from "../pages/EmailVerification";
 import PublicRoute from "../components/Auth/PublicRoute";
+import ProtectedRoute from "../components/Auth/ProtectedRoute";
 
 const appRoutes = createBrowserRouter([
   {
@@ -15,7 +16,11 @@ const appRoutes = createBrowserRouter([
       // Protected Routes
       {
         index: true,
-        element: <Home />,
+        element: (
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        ),
       },
       // Public Routes
       {
@@ -34,6 +39,7 @@ const appRoutes = createBrowserRouter([
           </PublicRoute>
         ),
       },
+      // Not a PublicRoute :- might be needed by both authenticated and unauthenticated users
       {
         path: "verify-email",
         element: <EmailVerification />,
