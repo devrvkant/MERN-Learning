@@ -5,23 +5,34 @@ import Home from "../pages/Home";
 import SignUp from "../pages/SignUp";
 import Login from "../pages/Login";
 import EmailVerification from "../pages/EmailVerification";
+import PublicRoute from "../components/Auth/PublicRoute";
 
 const appRoutes = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
+      // Protected Routes
       {
         index: true,
         element: <Home />,
       },
+      // Public Routes
       {
         path: "signup",
-        element: <SignUp />,
+        element: (
+          <PublicRoute>
+            <SignUp />
+          </PublicRoute>
+        ),
       },
       {
         path: "login",
-        element: <Login />,
+        element: (
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        ),
       },
       {
         path: "verify-email",

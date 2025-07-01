@@ -1,7 +1,11 @@
 import { Outlet } from "react-router-dom";
-import Home from "./pages/Home";
+
+import { useCheckAuthQuery } from "./redux/rtkQuery/authApi";
 
 const App = () => {
+  // check user's authStatus on app level
+  const { isLoading, data: user, isSuccess, error } = useCheckAuthQuery();
+
   return <Outlet />;
 };
 

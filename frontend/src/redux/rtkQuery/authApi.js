@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { clearUser, setUser } from "../slices/authSlice";
 
 // Define the apiSlice
 export const authApi = createApi({
@@ -20,7 +21,7 @@ export const authApi = createApi({
     }),
     verifyEmail: builder.mutation({
       query: (verificationOTP) => ({
-        url: "/verify-email",
+        url: "/verify-email", // POST /api/auth/verify-email
         method: "POST",
         body: { verificationOTP },
       }),
@@ -28,7 +29,25 @@ export const authApi = createApi({
         return response.data?.message || "Something went wrong!";
       },
     }),
+    checkAuth: builder.query({
+      query: () => "/check-auth", // GET /api/auth/check-auth
+      transformResponse: (response) => {
+        return response.user;
+      },
+      transformErrorResponse: (response) => {
+        return response.data?.message || "Something went wrong!";
+      },
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(setUser(data));
+        } catch (err) {
+          dispatch(clearUser());
+        }
+      },
+    }),
   }),
 });
 
-export const { useSignUpMutation, useVerifyEmailMutation } = authApi;
+export const { useSignUpMutation, useVerifyEmailMutation, useCheckAuthQuery } =
+  authApi;
