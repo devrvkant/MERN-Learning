@@ -1,12 +1,15 @@
 import { Outlet } from "react-router-dom";
 
 import { useCheckAuthQuery } from "./redux/rtkQuery/authApi";
+import FullPageLoader from "./components/Auth/FullPageLoader";
+import { useMinDelay } from "./hooks/useMinDelay";
 
 const App = () => {
   // check user's authStatus on app level
-  const { isLoading, data: user, isSuccess, error } = useCheckAuthQuery();
+  const { isLoading: isCheckingAuth } = useCheckAuthQuery();
+  const showLoader = useMinDelay(isCheckingAuth, 1000);
 
-  return <Outlet />;
+  return showLoader ? <FullPageLoader /> : <Outlet />;
 };
 
 export default App;
