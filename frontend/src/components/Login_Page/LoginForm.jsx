@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { Link } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 
 import {
   Form,
@@ -25,7 +25,7 @@ import { loginFormSchema } from "@/lib/validation-schemas";
 
 const formSchema = loginFormSchema;
 
-export default function LoginForm() {
+export default function LoginForm({ handleLogin, isLoading }) {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -34,19 +34,9 @@ export default function LoginForm() {
     },
   });
 
-  async function onSubmit(values) {
-    try {
-      // Assuming an async login function
-      console.log(values);
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
-    } catch (error) {
-      console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
-    }
+  async function onSubmit({ email, password }) {
+    // Assuming an async login function
+    await handleLogin(email, password);
   }
 
   return (
@@ -131,7 +121,11 @@ export default function LoginForm() {
                     type="submit"
                     className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
                   >
-                    Sign In
+                    {isLoading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      "Login"
+                    )}
                   </Button>
                 </div>
               </form>
@@ -140,7 +134,8 @@ export default function LoginForm() {
             <div className="mt-8 text-center">
               <p className="text-slate-600">
                 Don't have an account?{" "}
-                <Link to={"/signup"}
+                <Link
+                  to={"/signup"}
                   className="text-blue-600 hover:text-purple-600 font-semibold underline decoration-2 underline-offset-2 transition-colors"
                 >
                   Sign Up
