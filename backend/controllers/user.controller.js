@@ -265,6 +265,13 @@ export const resetPassword = async (req, res) => {
 
 export const checkAuth = async (req, res) => {
   try {
+    // Disable browser cache for this route
+    res.set({
+      "Cache-Control": "no-store, no-cache, must-revalidate, private",
+      Pragma: "no-cache",
+      Expires: "0",
+    });
+
     // only return the user to represent that the user is authenticated(loggedIn)
     const user = await User.findById(req.userId).select("-password");
     res.status(200).json({ success: true, user });
