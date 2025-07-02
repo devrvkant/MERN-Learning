@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 
@@ -10,34 +11,36 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
+} from "../../components/ui/form";
+import { Button } from "../../components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { PasswordInput } from "@/components/ui/password-input";
-import { loginFormSchema } from "@/lib/validation-schemas";
+} from "../../components/ui/card";
+import { Input } from "../../components/ui/input";
+import { forgotPasswordSchema } from "../../lib/validation-schemas";
 
-const formSchema = loginFormSchema;
-
-export default function LoginForm({ handleLogin, isLoading }) {
+const ForgotPasswordForm = () => {
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
       email: "",
-      password: "",
     },
   });
 
-  async function onSubmit({ email, password }) {
-    // Assuming an async login function
-    await handleLogin(email, password);
-  }
+  const onSubmit = async ({ email }) => {
+    try {
+      // TODO: Replace with your API call
+      console.log(email);
+      toast.success("Password reset email sent. Please check your inbox.");
+    } catch (error) {
+      console.error("Error sending password reset email", error);
+      toast.error("Failed to send password reset email. Please try again.");
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-4 py-8">
@@ -45,13 +48,13 @@ export default function LoginForm({ handleLogin, isLoading }) {
         <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader className="text-center pb-8">
             <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Welcome Back
+              Forgot Password
             </CardTitle>
             <CardDescription className="text-slate-600 mt-2">
-              Sign in to continue organizing your tasks
+              Enter your email address to receive a password reset link.
             </CardDescription>
           </CardHeader>
-          <CardContent className="px-8 pb-8">
+          <CardContent className="px-8">
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -64,9 +67,17 @@ export default function LoginForm({ handleLogin, isLoading }) {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-slate-700 font-medium">
-                          Email Address
-                        </FormLabel>
+                        <div className="flex justify-between items-center mb-2">
+                          <FormLabel className="text-slate-700 font-medium">
+                            Email Address
+                          </FormLabel>
+                          <Link
+                            to="/login"
+                            className="text-sm text-blue-600 hover:text-purple-600 font-medium transition-colors duration-200"
+                          >
+                            Back to Login
+                          </Link>
+                        </div>
                         <FormControl>
                           <Input
                             id="email"
@@ -83,68 +94,25 @@ export default function LoginForm({ handleLogin, isLoading }) {
                       </FormItem>
                     )}
                   />
-
-                  {/* Password Field */}
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="flex justify-between items-center mb-2">
-                          <FormLabel className="text-slate-700 font-medium">
-                            Password
-                          </FormLabel>
-                          <Link
-                            to={"/forgot-password"}
-                            className="text-sm text-blue-600 hover:text-purple-600 font-medium transition-colors duration-200"
-                          >
-                            Forgot password?
-                          </Link>
-                        </div>
-                        <FormControl>
-                          <PasswordInput
-                            id="password"
-                            placeholder="Enter your password"
-                            autoComplete="current-password"
-                            className="h-12 border-slate-200 focus:border-blue-400 focus:ring-blue-400/20 rounded-lg transition-colors"
-                            {...field}
-                          />
-                        </FormControl>
-                        <div className="min-h-[20px]">
-                          <FormMessage className="text-red-500 text-sm" />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-
                   <Button
                     type="submit"
+                    disabled={form.formState.isSubmitting}
                     className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
                   >
-                    {isLoading ? (
+                    {form.formState.isSubmitting ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
-                      "Login"
+                      "Send Reset Link"
                     )}
                   </Button>
                 </div>
               </form>
             </Form>
-
-            <div className="mt-8 text-center">
-              <p className="text-slate-600">
-                Don't have an account?{" "}
-                <Link
-                  to={"/signup"}
-                  className="text-blue-600 hover:text-purple-600 font-semibold underline decoration-2 underline-offset-2 transition-colors"
-                >
-                  Sign Up
-                </Link>
-              </p>
-            </div>
           </CardContent>
         </Card>
       </div>
     </div>
   );
-}
+};
+
+export default ForgotPasswordForm;

@@ -5,6 +5,7 @@ import Home from "../pages/Home";
 import SignUp from "../pages/SignUp";
 import Login from "../pages/Login";
 import EmailVerification from "../pages/EmailVerification";
+import ForgotPassword from "../pages/ForgotPassword";
 import PublicRoute from "../components/Auth/PublicRoute";
 import ProtectedRoute from "../components/Auth/ProtectedRoute";
 
@@ -36,6 +37,14 @@ const appRoutes = createBrowserRouter([
         element: (
           <PublicRoute>
             <Login />
+          </PublicRoute>
+        ),
+      },
+      {
+        path: "forgot-password",
+        element: (
+          <PublicRoute>
+            <ForgotPassword />
           </PublicRoute>
         ),
       },
