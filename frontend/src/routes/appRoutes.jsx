@@ -6,6 +6,7 @@ import SignUp from "../pages/SignUp";
 import Login from "../pages/Login";
 import EmailVerification from "../pages/EmailVerification";
 import ForgotPassword from "../pages/ForgotPassword";
+import ResetPassword from "../pages/ResetPassword";
 import PublicRoute from "../components/Auth/PublicRoute";
 import ProtectedRoute from "../components/Auth/ProtectedRoute";
 
@@ -14,7 +15,7 @@ const appRoutes = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
-      // Protected Routes
+      // Protected Routes :- Requires user to be loggedIn
       {
         index: true,
         element: (
@@ -23,7 +24,7 @@ const appRoutes = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      // Public Routes
+      // Public Routes :- Accessible without login
       {
         path: "signup",
         element: (
@@ -45,6 +46,14 @@ const appRoutes = createBrowserRouter([
         element: (
           <PublicRoute>
             <ForgotPassword />
+          </PublicRoute>
+        ),
+      },
+      {
+        path: "reset-password/:token",
+        element: (
+          <PublicRoute>
+            <ResetPassword />
           </PublicRoute>
         ),
       },

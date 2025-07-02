@@ -53,7 +53,7 @@ const ForgotPasswordForm = forwardRef(
                 Enter your email address to receive a password reset link.
               </CardDescription>
             </CardHeader>
-            <CardContent className="px-8">
+            <CardContent className="px-8 pb-8">
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}

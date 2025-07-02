@@ -107,6 +107,16 @@ export const authApi = createApi({
         return response.data?.message || "Something went wrong!";
       },
     }),
+    resetPassword: builder.mutation({
+      query: ({ token, password }) => ({
+        url: `/reset-password/${token}`, // PATCH /api/auth/reset-password/:token
+        method: "PATCH",
+        body: { password },
+      }),
+      transformErrorResponse: (response) => {
+        return response.data?.message || "Invalid or expired reset link!";
+      },
+    }),
   }),
 });
 
@@ -115,6 +125,7 @@ export const {
   useLogInMutation,
   useVerifyEmailMutation,
   useForgotPasswordMutation,
+  useResetPasswordMutation,
   useCheckAuthQuery,
   useLogOutMutation,
 } = authApi;
