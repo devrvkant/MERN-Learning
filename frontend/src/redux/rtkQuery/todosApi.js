@@ -5,6 +5,7 @@ export const todosApi = createApi({
   reducerPath: "todosApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:5500/api/todos", // sever base Url
+    credentials: "include", // include cookies if your backend sets httpOnly cookies
   }),
   // Tags for cache Invalidation
   tagTypes: ["Todos"],
