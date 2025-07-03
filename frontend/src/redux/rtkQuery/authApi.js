@@ -71,7 +71,9 @@ export const authApi = createApi({
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         try {
           const { data } = await queryFulfilled;
-          dispatch(setUser(data));
+          const user = data.user;
+          // Set the user data in the state after successful email verification
+          dispatch(setUser(user));
         } catch (err) {
           dispatch(clearUser());
         }

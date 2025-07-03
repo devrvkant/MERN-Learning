@@ -111,6 +111,7 @@ export const verifyEmail = async (req, res) => {
       status: true,
       message:
         "Email verified successfully, Welcome email is sent for verified email.",
+      user: user
     });
   } catch (err) {
     console.error(err.message);
