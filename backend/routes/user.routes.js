@@ -8,10 +8,11 @@ import {
   verifyEmail,
   forgotPassword,
   resetPassword,
-  checkAuth
+  checkAuth,
+  uploadProfilePicture
 } from "../controllers/user.controller.js";
 import verifyAuthToken from "../middlewares/verifyAuthToken.js";
-import upload from "../middlewares/upload.js";
+import uploadProfilePic from "../middlewares/uploadProfilePic.js";
 
 const userRouter = Router();
 userRouter.get("/users", getAllUsers);
@@ -21,7 +22,7 @@ userRouter.get("/users", getAllUsers);
 userRouter.get("/check-auth", verifyAuthToken, checkAuth)
 
 // for uploading profile picture
-userRouter.post("/upload-profile-picture", verifyAuthToken, upload.single("image"), uploadProfilePicture)
+userRouter.post("/profile-pic", verifyAuthToken, uploadProfilePic.single("image"), uploadProfilePicture)
 
 // signup(register) a new user
 userRouter.post("/signup", signUp);

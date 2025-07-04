@@ -13,6 +13,7 @@ import {
   sendWelcomeEmail,
   sendSuccessEmailForPasswordReset,
 } from "../services/resendEmails/emails.js";
+import cloudinary from "../services/cloudinary/cloudinary.config.js";
 
 export const signUp = async (req, res) => {
   try {
@@ -111,7 +112,7 @@ export const verifyEmail = async (req, res) => {
       status: true,
       message:
         "Email verified successfully, Welcome email is sent for verified email.",
-      user: user
+      user: user,
     });
   } catch (err) {
     console.error(err.message);
@@ -298,10 +299,39 @@ export const getAllUsers = async (req, res) => {
 };
 
 export const uploadProfilePicture = async (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "Profile picture uploaded successfully.",
-    imageUrl: req.file.path, // Assuming multer is configured to store the file and provide a path
-    userId: req.userId // You can also return the userId if needed
-  })
+  try {
+    if (!req.file)
+      return res.status(400).json({
+        success: false,
+        message: "No file uploaded, Please upload a profile picture.",
+      });
+    // find the user for which we are uploading the profile picture
+    const user = await User.findById(req.userId);
+
+    // delete previous profile picture if exists
+    if (user.profilePic && user.profilePic.public_id)
+      await cloudinary.uploader.destroy(user.profilePic.public_id);
+
+    // now upload the new profile picture
+    user.profilePic = {
+      public_id: req.file.filename,
+      url: req.file.path,
+    };
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Profile picture uploaded successfully.",
+      profilePic: {
+        public_id: req.file.filename,
+        url: req.file.path,
+      },
+    });
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error, Please try again later!",
+    });
+  }
 };

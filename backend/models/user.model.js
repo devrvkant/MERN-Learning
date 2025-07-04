@@ -33,6 +33,11 @@ const userSchema = new mongoose.Schema(
     resetPasswordTokenExpiresAt: Date,
     verificationToken: String,
     verificationTokenExpiresAt: Date,
+    // profilePicture
+    profilePic: {
+      public_id: String,
+      url: String,
+    },
   },
   { timestamps: true }
 );
