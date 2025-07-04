@@ -11,6 +11,7 @@ import {
   checkAuth
 } from "../controllers/user.controller.js";
 import verifyAuthToken from "../middlewares/verifyAuthToken.js";
+import upload from "../middlewares/upload.js";
 
 const userRouter = Router();
 userRouter.get("/users", getAllUsers);
@@ -18,6 +19,9 @@ userRouter.get("/users", getAllUsers);
 // for checking that if user is authenticated or not & also works as protetcting our apiRoutes which requires authentication
 // verifyToken :- MiddleWare here
 userRouter.get("/check-auth", verifyAuthToken, checkAuth)
+
+// for uploading profile picture
+userRouter.post("/upload-profile-picture", verifyAuthToken, upload.single("image"), uploadProfilePicture)
 
 // signup(register) a new user
 userRouter.post("/signup", signUp);

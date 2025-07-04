@@ -296,3 +296,12 @@ export const getAllUsers = async (req, res) => {
       .json({ error: "Internal Server Error, Please try again later!" });
   }
 };
+
+export const uploadProfilePicture = async (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Profile picture uploaded successfully.",
+    imageUrl: req.file.path, // Assuming multer is configured to store the file and provide a path
+    userId: req.userId // You can also return the userId if needed
+  })
+};
