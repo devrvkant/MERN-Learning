@@ -322,9 +322,8 @@ export const uploadProfilePicture = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Profile picture uploaded successfully.",
-      profilePic: {
-        public_id: req.file.filename,
-        url: req.file.path,
+      user: {
+        ...user._doc,
       },
     });
   } catch (err) {

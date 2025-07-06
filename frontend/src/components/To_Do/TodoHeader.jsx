@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 
-import { Plus, User, LogOut, CheckSquare } from "lucide-react";
+import { Plus, CircleUserRoundIcon, LogOut, CheckSquare } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -17,6 +17,7 @@ import {
 } from "../ui/dropdown-menu";
 import { useAddTodoMutation } from "../../redux/rtkQuery/todosApi";
 import { useLogOutMutation } from "../../redux/rtkQuery/authApi";
+import ImageUpload from "../ui/ImageUpload";
 
 const TodoHeader = () => {
   const [addNewTodo, { isLoading }] = useAddTodoMutation();
@@ -71,9 +72,17 @@ const TodoHeader = () => {
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="relative h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all duration-200"
+              className="cursor-pointer relative h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all duration-200"
             >
-              <User className="h-5 w-5 text-white" />
+              {user.profilePic?.url ? (
+                <img
+                  src={user.profilePic.url}
+                  alt="User Avatar"
+                  className="h-10 w-10 rounded-full object-cover absolute"
+                />
+              ) : (
+                <CircleUserRoundIcon className="w-4 h-4 text-white" />
+              )}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -90,15 +99,19 @@ const TodoHeader = () => {
               </p>
             </div>
             <DropdownMenuSeparator className="bg-gradient-to-r from-blue-200/60 to-purple-200/60 h-px" />
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <div onClick={(e) => e.stopPropagation()}>
+                <ImageUpload />
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-gradient-to-r from-blue-200/60 to-purple-200/60 h-px" />
             <DropdownMenuItem
               onClick={handleLogout}
               disabled={isLoggingOut}
               className="text-red-600 hover:text-red-700 hover:bg-red-50/80 focus:bg-red-50/80 cursor-pointer m-2 rounded-lg transition-all duration-200 disabled:opacity-50"
             >
               <LogOut className="mr-2 h-4 w-4" />
-              <span className="font-medium">
-                Logout
-              </span>
+              <span className="font-medium">Logout</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

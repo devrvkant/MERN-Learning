@@ -119,6 +119,25 @@ export const authApi = createApi({
         return response.data?.message || "Invalid or expired reset link!";
       },
     }),
+    uploadProfilePic: builder.mutation({
+      query: (formData) => ({
+        url: "/profile-pic", // POST /api/auth/profile-pic
+        method: "POST",
+        body: formData,
+      }),
+      transformErrorResponse: (response) => {
+        return response.data?.message || "Internal Server Error, Please try again later!";
+      },
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        try {
+          const { data } = await queryFulfilled;
+          // Update user data with new profile picture
+          dispatch(setUser(data.user));
+        } catch (err) {
+          console.error("Upload failed:", err);
+        }
+      },
+    }),
   }),
 });
 
@@ -130,4 +149,5 @@ export const {
   useResetPasswordMutation,
   useCheckAuthQuery,
   useLogOutMutation,
+  useUploadProfilePicMutation,
 } = authApi;
